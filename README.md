@@ -1,4 +1,4 @@
-# Music Discovery App - Backend
+# capstone-project-be
 
 A backend server for the Music Discovery App, a platform that allows users to discover and share music based on their preferences.
 
