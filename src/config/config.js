@@ -18,6 +18,8 @@ const config = {
     jwtSecret: process.env.JWT_SECRET,
     refreshTokenSecret: process.env.REFRESH_SECRET,
     cloudinaryUrl: process.env.CLOUDINARY_URL,
+    googleId: process.env.GOOGLE_ID,
+    googleSecret: process.env.GOOGLE_SECRET
 };
 
 export default config;
