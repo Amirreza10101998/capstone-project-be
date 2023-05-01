@@ -1,9 +1,17 @@
 import { DataTypes } from 'sequelize';
 import sequelize from '../config/database.js';
 import bcrypt from 'bcrypt';
+import Playlist from '../models/playlist.js';
+import SongCard from '../models/songCard.js';
+import UserSongPreferences from '../models/UserSongPreferences.js';
 
 const User = sequelize.define('User', {
-    name: {
+    id: {
+        type: DataTypes.UUID,
+        primaryKey: true,
+        defaultValue: DataTypes.UUIDV4,
+    },
+    username: {
         type: DataTypes.STRING,
         allowNull: false,
     },
