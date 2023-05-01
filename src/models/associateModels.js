@@ -1,7 +1,7 @@
 import User from './user.js';
 import Playlist from './playlist.js';
 import SongCard from './songCard.js';
-import UserSongPreferences from './UserSongPreferences.js';
+import UserSongPreferences from './userSongPreferences.js';
 import Post from './post.js';
 
 const associateModels = () => {
