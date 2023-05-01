@@ -1,8 +1,8 @@
 import express from "express"
 import listEndpoints from "express-list-endpoints";
 import cors from "cors";
-import config from "./config/index.js";
-import { pgConnect } from "./utils/database.js";
+import config from "./config/config.js";
+import { pgConnect } from "./config/database.js";
 
 const server = express()
 

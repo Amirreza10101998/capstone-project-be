@@ -13,7 +13,11 @@ const config = {
         host: process.env.PG_HOST,
         port: parseInt(process.env.PG_PORT, 10),
     },
+    frontendUrl: process.env.FE_URL,
+    backendUrl: process.env.BE_URL,
+    jwtSecret: process.env.JWT_SECRET,
+    refreshTokenSecret: process.env.REFRESH_SECRET,
+    cloudinaryUrl: process.env.CLOUDINARY_URL,
 };
-
 
 export default config;
