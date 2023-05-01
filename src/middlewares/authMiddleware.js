@@ -51,11 +51,12 @@ export const verifyRefreshToken = (token) =>
 
 export const createTokens = async (user) => {
     console.log(user);
-    const accessToken = await createAccessToken({ _id: user._id });
-    const refreshToken = await createRefreshToken({ _id: user._id });
+    const accessToken = await createAccessToken({ id: user.id });
+    const refreshToken = await createRefreshToken({ id: user.id });
 
     user.refreshToken = refreshToken;
     await user.save();
+    console.log(accessToken)
 
     return { accessToken, refreshToken };
 };
@@ -63,11 +64,11 @@ export const createTokens = async (user) => {
 export const verifyAndRefreshTokens = async (currentRefreshToken) => {
     try {
         console.log("bla", currentRefreshToken);
-        const { _id } = await verifyRefreshToken(currentRefreshToken);
-        console.log(_id);
-        const user = await UsersModel.findById(_id);
+        const { id } = await verifyRefreshToken(currentRefreshToken);
+        console.log(id);
+        const user = await UsersModel.findById(id);
         console.log(user);
-        if (!user) throw new createHttpError(404, `User with id ${_id} not found.`);
+        if (!user) throw new createHttpError(404, `User with id ${id} not found.`);
         if (user.refreshToken && user.refreshToken === currentRefreshToken) {
             const { accessToken, refreshToken } = await createTokens(user);
             return { accessToken, refreshToken };
@@ -86,7 +87,7 @@ export const jwtAuth = async (req, res, next) => {
         const accessToken = req.headers.authorization.replace("Bearer ", "");
         try {
             const payload = await verifyAccessToken(accessToken);
-            req.user = { _id: payload._id };
+            req.user = { id: payload.id };
             next();
         } catch (error) {
             console.log(error);

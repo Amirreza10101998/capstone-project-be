@@ -1,3 +1,4 @@
+import { Op } from "sequelize";
 import passport from "passport";
 import UsersModel from "../models/user.js";
 import createError from "http-errors";
@@ -24,13 +25,15 @@ export const getUsers = async (req, res, next) => {
         let query = {};
 
         if (q) {
-            query.$or = [
-                { name: { $regex: q, $options: "i" } },
-                { email: { $regex: q, $options: "i" } },
-            ];
+            query = {
+                [Op.or]: [
+                    { name: { [Op.iRegexp]: q } },
+                    { email: { [Op.iRegexp]: q } },
+                ],
+            };
         }
 
-        const users = await UsersModel.find(query).select("-refreshToken");
+        const users = await UsersModel.findAll({ where: query });
         res.status(200).json(users);
     } catch (error) {
         next(error);
@@ -39,13 +42,13 @@ export const getUsers = async (req, res, next) => {
 
 export const getMe = async (req, res, next) => {
     try {
-        const currentUser = await UsersModel.findById(req.user._id);
-
-        if (currentUser) {
-            res.status(200).json(currentUser);
-        } else {
-            next(createError(404, "User not found"));
+        const user = await UsersModel.findOne({
+            where: { id: req.user.id },
+        });
+        if (!user) {
+            return res.status(404).send({ message: "User not found" });
         }
+        res.status(200).send(user);
     } catch (error) {
         next(error);
     }
@@ -53,35 +56,35 @@ export const getMe = async (req, res, next) => {
 
 export const updateMe = async (req, res, next) => {
     try {
-        const updates = req.body;
-        const currentUser = await UsersModel.findById(req.user._id);
-        const updatedUser = await UsersModel.findByIdAndUpdate(
-            currentUser,
-            updates,
-            {
-                new: true,
-                runValidators: true,
-            }
-        );
+        const userId = req.user.id;
+        const updatedUser = await UsersModel.update(req.body, {
+            where: { id: userId },
+        });
 
-        if (updatedUser) {
-            res.status(200).json(updatedUser);
+        if (updatedUser[0] === 1) {
+            const updatedUserData = await UsersModel.findByPk(userId);
+            res.status(200).send(updatedUserData);
         } else {
-            next(createError(404, "User not found"));
+            res.status(404).send({ message: "User not found or not updated" });
         }
     } catch (error) {
-        next(error);
+        res.status(400).send({ message: error.message });
     }
 };
 
 export const uploadAvatar = async (req, res, next) => {
     try {
-        const updatedUser = await UsersModel.findByIdAndUpdate(
-            req.user._id,
-            { avatar: req.file.path },
-            { new: true, runValidators: true }
+        const { id } = req.user;
+        const { filename } = req.file;
+        const updatedUser = await UsersModel.update(
+            { avatar: filename },
+            { where: { id } }
         );
-        res.send(updatedUser);
+        if (updatedUser[0] === 1) {
+            res.status(200).json({ message: 'Avatar updated successfully' });
+        } else {
+            res.status(404).json({ message: 'User not found or not updated' });
+        }
     } catch (error) {
         next(error);
     }
@@ -89,9 +92,9 @@ export const uploadAvatar = async (req, res, next) => {
 
 export const getUserById = async (req, res, next) => {
     try {
-        const users = await UsersModel.findById(req.params.userId);
-        if (users) {
-            res.send(users);
+        const user = await UsersModel.findByPk(req.params.userId);
+        if (user) {
+            res.send(user);
         } else {
             next(createError(404, `User with id ${req.params.userId} not found`));
         }
@@ -103,10 +106,10 @@ export const getUserById = async (req, res, next) => {
 export const createAccount = async (req, res, next) => {
     try {
         const newUser = new UsersModel(req.body);
-        const { _id } = await newUser.save();
+        const { id } = await newUser.save();
         const { accessToken, refreshToken } = await createTokens(newUser);
 
-        res.send({ _id, accessToken, refreshToken });
+        res.send({ id, accessToken, refreshToken });
     } catch (error) {
         next(error);
     }
@@ -130,9 +133,10 @@ export const createSession = async (req, res, next) => {
 
 export const deleteSession = async (req, res, next) => {
     try {
-        const user = await UsersModel.findByIdAndUpdate(req.user._id, {
-            refreshToken: undefined,
-        });
+        const user = await UsersModel.update(
+            { refreshToken: null }, // or { refreshToken: undefined }
+            { where: { id: req.user.id } }
+        );
         res.status(204).send();
     } catch (error) {
         next(error);
