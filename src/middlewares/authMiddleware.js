@@ -1,5 +1,5 @@
 import jwt from "jsonwebtoken";
-import UsersModel from "../api/users/model.js";
+import UsersModel from "../models/user.js";
 import createHttpError from "http-errors";
 import GoogleStrategy from "passport-google-oauth20";
 import multer from "multer";
