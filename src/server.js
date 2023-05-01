@@ -1,7 +1,6 @@
 import express from "express";
 import listEndpoints from "express-list-endpoints";
 import cors from "cors";
-import { pgConnect } from "./config/database.js";
 import config from "./config/config.js";
 import {
     badRequestHandler,
@@ -15,6 +14,7 @@ import { googleStrategy } from "./middlewares/authMiddleware.js";
 import passport from "passport";
 import sequelize from './config/database.js';
 import associateModels from './models/associateModels.js';
+import usersRouter from "./routes/userRouter.js";
 
 const server = express();
 const whitelist = [config.server.FE_URL];
@@ -38,6 +38,7 @@ server.use(passport.initialize());
 passport.use("google", googleStrategy);
 
 /*---------- ENDPOINTS ----------*/
+server.use("/users", usersRouter)
 
 /*---------- ERRORHANDLERS ----------*/
 server.use(badRequestHandler);
