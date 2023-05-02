@@ -23,6 +23,10 @@ const User = sequelize.define('User', {
     avatar: {
         type: DataTypes.STRING,
     },
+    favorite_genres: {
+        type: DataTypes.ARRAY(DataTypes.STRING),
+        allowNull: false,
+    },
     password: {
         type: DataTypes.STRING,
     },

@@ -19,7 +19,11 @@ const config = {
     refreshTokenSecret: process.env.REFRESH_SECRET,
     cloudinaryUrl: process.env.CLOUDINARY_URL,
     googleId: process.env.GOOGLE_ID,
-    googleSecret: process.env.GOOGLE_SECRET
+    googleSecret: process.env.GOOGLE_SECRET,
+    spotify: {
+        client_id: process.env.SPOTIFY_CLIENT_ID,
+        client_secret: process.env.SPOTIFY_CLIENT_SECRET,
+    },
 };
 
 export default config;

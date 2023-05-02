@@ -66,7 +66,7 @@ export const verifyAndRefreshTokens = async (currentRefreshToken) => {
         console.log("bla", currentRefreshToken);
         const { id } = await verifyRefreshToken(currentRefreshToken);
         console.log(id);
-        const user = await UsersModel.findById(id);
+        const user = await UsersModel.findByPk(id);
         console.log(user);
         if (!user) throw new createHttpError(404, `User with id ${id} not found.`);
         if (user.refreshToken && user.refreshToken === currentRefreshToken) {
