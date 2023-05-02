@@ -11,6 +11,7 @@ import {
     createSession,
     deleteSession,
     refreshSession,
+    setFavoriteArtistsAndGenres,
 } from "../controllers/userController.js";
 import { jwtAuth, cloudinaryUploader } from "../middlewares/authMiddleware.js";
 
@@ -27,5 +28,6 @@ usersRouter.post("/account", createAccount);
 usersRouter.post("/session", createSession);
 usersRouter.delete("/session", jwtAuth, deleteSession);
 usersRouter.post("/session/refresh", refreshSession);
+usersRouter.post("/me/favorites", jwtAuth, setFavoriteArtistsAndGenres);
 
 export default usersRouter;

@@ -27,6 +27,10 @@ const UserSongPreferences = sequelize.define('UserSongPreferences', {
         type: DataTypes.BOOLEAN,
         allowNull: false,
     },
+    disliked: {
+        type: DataTypes.BOOLEAN,
+        allowNull: false,
+    },
 }, {
     timestamps: true,
 });

@@ -16,7 +16,9 @@ import sequelize from './config/database.js';
 import associateModels from './models/associateModels.js';
 import usersRouter from "./routes/userRouter.js";
 import songCardRouter from "./routes/songCardRouter.js";
-import populateSongCards from './utils/songCardUtils.js';
+import discoveryFeedRouter from "./routes/discoveryFeedRouter.js";
+
+
 
 const server = express();
 const whitelist = [config.server.FE_URL];
@@ -42,6 +44,7 @@ passport.use("google", googleStrategy);
 /*---------- ENDPOINTS ----------*/
 server.use("/users", usersRouter)
 server.use("/songs", songCardRouter)
+server.use("/feed", discoveryFeedRouter)
 
 /*---------- ERRORHANDLERS ----------*/
 server.use(badRequestHandler);
@@ -50,10 +53,10 @@ server.use(forbiddenErrorHandler);
 server.use(notfoundHandler);
 server.use(genericErrorHandler);
 
-// Initialize models and relationships
+
 associateModels();
 
-// Start server
+
 sequelize.sync()
     .then(() => {
         server.listen(config.server.port, () => {
@@ -65,5 +68,5 @@ sequelize.sync()
         console.error('Unable to connect to the database:', error);
     });
 
-populateSongCards('genre:"rap"');
-populateSongCards('genre:"rock"');
+
+

@@ -155,3 +155,23 @@ export const refreshSession = async (req, res, next) => {
     }
 };
 
+export const setFavoriteArtistsAndGenres = async (req, res, next) => {
+    try {
+        const userId = req.user.id;
+        const { favoriteArtists, favoriteGenres } = req.body;
+
+        const updatedUser = await UsersModel.update(
+            { favoriteArtists, favoriteGenres },
+            { where: { id: userId } }
+        );
+
+        if (updatedUser[0] === 1) {
+            const updatedUserData = await UsersModel.findByPk(userId);
+            res.status(200).send(updatedUserData);
+        } else {
+            res.status(404).send({ message: "User not found or not updated" });
+        }
+    } catch (error) {
+        next();
+    }
+};

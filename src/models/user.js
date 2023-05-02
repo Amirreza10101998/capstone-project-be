@@ -27,6 +27,9 @@ const User = sequelize.define('User', {
         type: DataTypes.ARRAY(DataTypes.STRING),
         allowNull: false,
     },
+    favorite_artists: {
+        type: DataTypes.ARRAY(DataTypes.STRING),
+    },
     password: {
         type: DataTypes.STRING,
     },

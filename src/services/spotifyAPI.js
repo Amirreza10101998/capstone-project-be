@@ -1,33 +1,29 @@
-import axios from 'axios';
+import SpotifyWebApi from 'spotify-web-api-node';
 import config from '../config/config.js';
 
-const client_id = config.spotify.client_id;
-const client_secret = config.spotify.client_secret;
+const { client_id, client_secret, redirectUri } = config.spotify;
 
-const getAccessToken = async () => {
-    const response = await axios({
-        method: 'post',
-        url: 'https://accounts.spotify.com/api/token',
-        headers: {
-            'Content-Type': 'application/x-www-form-urlencoded',
-            'Authorization': 'Basic ' + Buffer.from(client_id + ':' + client_secret).toString('base64'),
-        },
-        data: 'grant_type=client_credentials',
-    });
+const spotifyApi = new SpotifyWebApi({
+    clientId: client_id,
+    clientSecret: client_secret,
+    redirectUri: redirectUri,
+});
 
-    return response.data.access_token;
+const initSpotifyApi = async () => {
+    try {
+        const data = await spotifyApi.clientCredentialsGrant();
+        const accessToken = data.body['access_token'];
+        console.log('Successfully retrieved access token from Spotify API');
+        spotifyApi.setAccessToken(accessToken);
+
+        // Set a timeout to refresh the token before it expires
+        setTimeout(async () => {
+            await initSpotifyApi();
+        }, (data.body['expires_in'] - 60) * 1000); // Refresh the token 60 seconds before expiration
+    } catch (error) {
+        console.error('Failed to retrieve access token from Spotify API:', error);
+    }
 };
 
-const searchTracks = async (query, accessToken) => {
-    const response = await axios({
-        method: 'get',
-        url: `https://api.spotify.com/v1/search?q=${encodeURIComponent(query)}&type=track&market=US&limit=10`,
-        headers: {
-            'Authorization': `Bearer ${accessToken}`,
-        },
-    });
-
-    return response.data.tracks.items;
-};
-
-export { getAccessToken, searchTracks };
+export default spotifyApi;
+export { initSpotifyApi };
