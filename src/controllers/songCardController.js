@@ -79,7 +79,7 @@ export const getSongRecommendations = async (favoriteGenres) => {
         });
 
         return recommendations.body.tracks.map((track) => ({
-            id: track.id,
+            spotify_id: track.id,
             song_title: track.name,
             album_title: track.album.name,
             artist: track.artists.map((artist) => artist.name).join(', '),
@@ -93,19 +93,40 @@ export const getSongRecommendations = async (favoriteGenres) => {
 };
 
 
+const searchArtists = async (artists) => {
+    try {
+        const searchResults = await Promise.all(
+            artists.map(async (artist) => {
+                const result = await spotifyApi.searchArtists(artist);
+                console.log(`Search query: ${artist}`);
+                console.log("Artist search result:", result);
+                return result.body.artists.items[0]?.id;
+            })
+        );
+        return searchResults.filter((id) => id);
+    } catch (error) {
+        console.error("Error fetching artist IDs:", error);
+    }
+};
+
 export const getArtistRecommendations = async (favoriteArtists) => {
     try {
         await initSpotifyApi();
 
-        const seedArtists = favoriteArtists.join(',');
+        const seedArtists = await searchArtists(favoriteArtists);
 
         const recommendations = await spotifyApi.getRecommendations({
-            seed_artists: seedArtists,
+            seed_artists: seedArtists.join(','),
+            limit: 20,
+        });
+
+        console.log("Recommendations request parameters:", {
+            seed_artists: seedArtists.join(','),
             limit: 20,
         });
 
         return recommendations.body.tracks.map((track) => ({
-            id: track.id,
+            spotify_id: track.id,
             song_title: track.name,
             album_title: track.album.name,
             artist: track.artists.map((artist) => artist.name).join(', '),
@@ -118,8 +139,5 @@ export const getArtistRecommendations = async (favoriteArtists) => {
     }
 };
 
-export const testGetSongRecommendations = async () => {
-    const favoriteGenres = ['rock', 'pop'];
-    const recommendations = await getSongRecommendations(favoriteGenres);
-    console.log(recommendations);
-};
+
+

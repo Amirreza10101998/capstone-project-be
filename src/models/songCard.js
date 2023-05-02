@@ -26,6 +26,15 @@ const SongCard = sequelize.define('SongCard', {
         type: DataTypes.STRING,
         allowNull: false,
     },
+    spotify_id: { // Rename the column from 'spotify_track_id' to 'spotify_id'
+        type: DataTypes.STRING,
+        allowNull: false,
+        unique: true, // Add this to ensure that the spotify_id is unique
+    },
+    song_artists: { // Add the 'song_artists' column
+        type: DataTypes.ARRAY(DataTypes.STRING),
+        allowNull: true,
+    },
 }, {
     timestamps: true,
 });
