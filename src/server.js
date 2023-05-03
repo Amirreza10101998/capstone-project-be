@@ -17,20 +17,26 @@ import associateModels from './models/associateModels.js';
 import usersRouter from "./routes/userRouter.js";
 import songCardRouter from "./routes/songCardRouter.js";
 import discoveryFeedRouter from "./routes/discoveryFeedRouter.js";
+import createHttpError from "http-errors";
 
 
 
 const server = express();
-const whitelist = [config.server.FE_URL];
 
 /*---------- MIDDLEWARES ----------*/
+const whitelist = [process.env.FE_DEV_URL, process.env.FE_PROD_URL];
 server.use(
     cors({
         origin: (currentOrigin, corsNext) => {
             if (!currentOrigin || whitelist.indexOf(currentOrigin) !== -1) {
                 corsNext(null, true);
             } else {
-                corsNext(createHttpError(400, `Origin ${currentOrigin} is not whitelisted.`));
+                corsNext(
+                    createHttpError(
+                        400,
+                        `Origin ${currentOrigin} is not in the whitelist!`
+                    )
+                );
             }
         },
     })

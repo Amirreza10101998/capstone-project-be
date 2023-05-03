@@ -66,16 +66,25 @@ export const deleteSongCard = async (req, res, next) => {
     }
 };
 
+const getRandomSubset = (arr, count) => {
+    const shuffled = arr.slice(0);
+    for (let i = arr.length - 1; i > 0; i--) {
+        const index = Math.floor(Math.random() * (i + 1));
+        [shuffled[i], shuffled[index]] = [shuffled[index], shuffled[i]];
+    }
+    return shuffled.slice(0, count);
+};
+
 export const getSongRecommendations = async (favoriteGenres) => {
     try {
-
         await initSpotifyApi();
 
-        const seedGenres = favoriteGenres.join(',');
+        const seedGenresSubset = getRandomSubset(favoriteGenres, 20); // Select 3 random genres
+        const seedGenres = seedGenresSubset.join(',');
 
         const recommendations = await spotifyApi.getRecommendations({
             seed_genres: seedGenres,
-            limit: 20,
+            limit: 100,
         });
 
         return recommendations.body.tracks.map((track) => ({
@@ -91,7 +100,6 @@ export const getSongRecommendations = async (favoriteGenres) => {
         console.error('Error fetching song recommendations:', error);
     }
 };
-
 
 const searchArtists = async (artists) => {
     try {
@@ -113,16 +121,17 @@ export const getArtistRecommendations = async (favoriteArtists) => {
     try {
         await initSpotifyApi();
 
-        const seedArtists = await searchArtists(favoriteArtists);
+        const seedArtistsSubset = getRandomSubset(favoriteArtists, 20); // Select 3 random artists
+        const seedArtists = await searchArtists(seedArtistsSubset);
 
         const recommendations = await spotifyApi.getRecommendations({
             seed_artists: seedArtists.join(','),
-            limit: 20,
+            limit: 10,
         });
 
         console.log("Recommendations request parameters:", {
             seed_artists: seedArtists.join(','),
-            limit: 20,
+            limit: 10,
         });
 
         return recommendations.body.tracks.map((track) => ({
@@ -138,6 +147,43 @@ export const getArtistRecommendations = async (favoriteArtists) => {
         console.error('Error fetching artist recommendations:', error);
     }
 };
+
+export const getPlaylistsFromCategory = async (category_id) => {
+    try {
+        await initSpotifyApi();
+
+        const playlists = await spotifyApi.getPlaylistsForCategory(category_id, {
+            country: 'US', // Change this to the desired country code
+            limit: 10,
+        });
+
+        return playlists.body.playlists.items;
+    } catch (error) {
+        console.error('Error fetching playlists from category:', error);
+    }
+};
+
+export const getTracksFromPlaylist = async (playlist_id) => {
+    try {
+        await initSpotifyApi();
+
+        const tracks = await spotifyApi.getPlaylistTracks(playlist_id, {
+            limit: 100,
+        });
+
+        return tracks.body.items.map((item) => ({
+            spotify_id: item.track.id,
+            song_title: item.track.name,
+            album_title: item.track.album.name,
+            artist: item.track.artists.map((artist) => artist.name).join(', '),
+            album_art: item.track.album.images[0]?.url,
+            song_url: item.track.external_urls.spotify,
+        }));
+    } catch (error) {
+        console.error('Error fetching tracks from playlist:', error);
+    }
+};
+
 
 
 

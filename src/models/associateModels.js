@@ -11,6 +11,12 @@ const associateModels = () => {
     User.belongsToMany(SongCard, { through: UserSongPreferences, foreignKey: 'user_id' });
     SongCard.belongsToMany(User, { through: UserSongPreferences, foreignKey: 'song_id' });
 
+    // Add these associations
+    UserSongPreferences.belongsTo(SongCard, { foreignKey: 'song_id' });
+    UserSongPreferences.belongsTo(User, { foreignKey: 'user_id' });
+    SongCard.hasMany(UserSongPreferences, { foreignKey: 'song_id' });
+    User.hasMany(UserSongPreferences, { foreignKey: 'user_id' });
+
     Playlist.belongsToMany(SongCard, { through: 'playlist_song_cards', foreignKey: 'playlist_id' });
     SongCard.belongsToMany(Playlist, { through: 'playlist_song_cards', foreignKey: 'song_id' });
 

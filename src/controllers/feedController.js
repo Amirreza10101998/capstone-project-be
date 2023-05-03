@@ -1,7 +1,8 @@
-import { getSongRecommendations, getArtistRecommendations } from './songCardController.js';
+import { getSongRecommendations, getArtistRecommendations, getTracksFromPlaylist, getPlaylistsFromCategory } from './songCardController.js';
 import User from '../models/user.js';
 import SongCard from '../models/songCard.js';
 import UserSongPreferences from '../models/userSongPreferences.js';
+
 
 export const getDiscoveryFeed = async (req, res, next) => {
     try {
@@ -13,30 +14,16 @@ export const getDiscoveryFeed = async (req, res, next) => {
 
         const { favorite_genres, favorite_artists } = user;
 
-        console.log('Favorite genres:', favorite_genres);
-        console.log('Favorite artists:', favorite_artists);
+        // Get playlists from different categories
+        const categories = ['toplists', 'mood', 'party']; // Replace with desired categories
+        const playlistsPromises = categories.map((category) => getPlaylistsFromCategory(category));
+        const playlistsArray = await Promise.all(playlistsPromises);
+        const playlists = playlistsArray.flat();
 
-        // Fetch song recommendations based on favorite genres
-        const genreRecommendations = await getSongRecommendations(favorite_genres);
-
-        console.log('Genre recommendations:', genreRecommendations);
-
-        // Fetch song recommendations based on favorite artists
-        const artistRecommendations = await getArtistRecommendations(favorite_artists);
-
-        console.log('Artist recommendations:', artistRecommendations);
-
-        // Combine the recommendations
-        const combinedRecommendations = [...genreRecommendations, ...artistRecommendations];
-
-        console.log('Combined recommendations:', combinedRecommendations);
-
-        // Filter out duplicates
-        const uniqueRecommendations = combinedRecommendations.filter(
-            (track, index, self) => self.findIndex((t) => t.id === track.id) === index
-        );
-
-        console.log('Unique recommendations:', uniqueRecommendations);
+        // Get tracks from the playlists
+        const tracksPromises = playlists.map((playlist) => getTracksFromPlaylist(playlist.id));
+        const tracksArray = await Promise.all(tracksPromises);
+        const uniqueRecommendations = tracksArray.flat();
 
         // Save the song cards and associate them with the user
         const savedSongCards = [];
@@ -51,9 +38,6 @@ export const getDiscoveryFeed = async (req, res, next) => {
                 where: { spotify_id: recommendation.spotify_id },
                 defaults: recommendation,
             });
-
-            console.log('Song card:', songCard);
-            console.log('Created:', created);
 
             // Associate the song card with the user if not already associated
             if (created) {
@@ -70,12 +54,13 @@ export const getDiscoveryFeed = async (req, res, next) => {
             savedSongCards.push(songCard);
         }
 
-        console.log('Saved song cards:', savedSongCards);
-
         // Return the saved song cards to the front-end
-        res.status(200).json(savedSongCards);
+        res.status(200).json({
+            result: savedSongCards,
+        });
     } catch (error) {
         next(error);
     }
 };
+
 
