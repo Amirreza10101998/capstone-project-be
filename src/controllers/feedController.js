@@ -1,8 +1,7 @@
-import { getSongRecommendations, getArtistRecommendations, getTracksFromPlaylist, getPlaylistsFromCategory } from './songCardController.js';
+import { getGenreBasedRecommendations, getArtistBasedRecommendations } from '../utils/songRecommendation.js';
 import User from '../models/user.js';
 import SongCard from '../models/songCard.js';
 import UserSongPreferences from '../models/userSongPreferences.js';
-
 
 export const getDiscoveryFeed = async (req, res, next) => {
     try {
@@ -14,17 +13,30 @@ export const getDiscoveryFeed = async (req, res, next) => {
 
         const { favorite_genres, favorite_artists } = user;
 
-        // Get playlists from different categories
-        const categories = ['toplists', 'mood', 'party']; // Replace with desired categories
-        const playlistsPromises = categories.map((category) => getPlaylistsFromCategory(category));
-        const playlistsArray = await Promise.all(playlistsPromises);
-        const playlists = playlistsArray.flat();
+        // Fetch song recommendations
+        let uniqueRecommendations = [];
+        let maxAttempts = 1;
+        let attempts = 0;
 
-        // Get tracks from the playlists
-        const tracksPromises = playlists.map((playlist) => getTracksFromPlaylist(playlist.id));
-        const tracksArray = await Promise.all(tracksPromises);
-        const uniqueRecommendations = tracksArray.flat();
+        while (uniqueRecommendations.length < 5 && attempts < maxAttempts) {
+            // Fetch song recommendations based on favorite genres
+            const genreRecommendations = await getGenreBasedRecommendations(favorite_genres);
 
+            // Fetch song recommendations based on favorite artists
+            const artistRecommendations = await getArtistBasedRecommendations(favorite_artists);
+
+            // Combine the recommendations
+            const combinedRecommendations = [...genreRecommendations, ...artistRecommendations];
+
+            // Filter out duplicates
+            uniqueRecommendations = combinedRecommendations.filter(
+                (track, index, self) => self.findIndex((t) => t.spotify_id === track.spotify_id) === index
+            );
+
+            attempts++;
+        }
+
+        // Save the song cards and associate them with the user
         // Save the song cards and associate them with the user
         const savedSongCards = [];
         for (const recommendation of uniqueRecommendations) {
@@ -62,5 +74,4 @@ export const getDiscoveryFeed = async (req, res, next) => {
         next(error);
     }
 };
-
 
