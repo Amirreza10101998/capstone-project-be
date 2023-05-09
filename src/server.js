@@ -18,6 +18,7 @@ import usersRouter from "./routes/userRouter.js";
 import songCardRouter from "./routes/songCardRouter.js";
 import discoveryFeedRouter from "./routes/discoveryFeedRouter.js";
 import createHttpError from "http-errors";
+import spotifyRouter from "./routes/spotifyRouter.js";
 
 
 
@@ -51,6 +52,7 @@ passport.use("google", googleStrategy);
 server.use("/users", usersRouter)
 server.use("/songs", songCardRouter)
 server.use("/feed", discoveryFeedRouter)
+server.use("/api", spotifyRouter)
 
 /*---------- ERRORHANDLERS ----------*/
 server.use(badRequestHandler);

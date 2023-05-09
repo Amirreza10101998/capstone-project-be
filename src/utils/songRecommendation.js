@@ -19,7 +19,7 @@ export const getGenreBasedRecommendations = async (favoriteGenres) => {
 
         const recommendations = await spotifyApi.getRecommendations({
             seed_genres: seedGenres,
-            limit: 50,
+            limit: 100,
         });
 
         return recommendations.body.tracks.map((track) => ({
@@ -78,3 +78,39 @@ export const getArtistBasedRecommendations = async (favoriteArtists) => {
     }
 };
 
+/*export const getPlaylistsFromCategory = async (category_id) => {
+    try {
+        await initSpotifyApi();
+
+        const playlists = await spotifyApi.getPlaylistsForCategory(category_id, {
+            country: 'US', // Change this to the desired country code
+            limit: 10,
+        });
+
+        return playlists.body.playlists.items;
+    } catch (error) {
+        console.error('Error fetching playlists from category:', error);
+    }
+};
+
+export const getTracksFromPlaylist = async (playlist_id) => {
+    try {
+        await initSpotifyApi();
+
+        const tracks = await spotifyApi.getPlaylistTracks(playlist_id, {
+            limit: 100,
+        });
+
+        return tracks.body.items.map((item) => ({
+            spotify_id: item.track.id,
+            song_title: item.track.name,
+            album_title: item.track.album.name,
+            artist: item.track.artists.map((artist) => artist.name).join(', '),
+            album_art: item.track.album.images[0]?.url,
+            song_url: item.track.external_urls.spotify,
+        }));
+    } catch (error) {
+        console.error('Error fetching tracks from playlist:', error);
+    }
+};
+*/

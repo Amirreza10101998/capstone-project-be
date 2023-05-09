@@ -37,10 +37,8 @@ export const getDiscoveryFeed = async (req, res, next) => {
         }
 
         // Save the song cards and associate them with the user
-        // Save the song cards and associate them with the user
         const savedSongCards = [];
         for (const recommendation of uniqueRecommendations) {
-            console.log('Processing recommendation:', recommendation);
             if (!recommendation.spotify_id) {
                 console.log('Skipping recommendation due to missing spotify_id');
                 continue;
@@ -59,8 +57,6 @@ export const getDiscoveryFeed = async (req, res, next) => {
                     liked: false, // Add a default value for liked
                     disliked: false, // Add a default value for disliked
                 });
-            } else {
-                console.log('Song card already exists');
             }
 
             savedSongCards.push(songCard);

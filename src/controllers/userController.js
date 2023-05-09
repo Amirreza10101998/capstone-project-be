@@ -123,6 +123,7 @@ export const createSession = async (req, res, next) => {
         if (user) {
             const { accessToken, refreshToken } = await createTokens(user);
             res.send({ accessToken, refreshToken });
+            console.log(accessToken)
         } else {
             next(createError(401, "Invalid credentials"));
         }
