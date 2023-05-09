@@ -17,10 +17,10 @@ const initSpotifyApi = async () => {
         console.log(accessToken)
         spotifyApi.setAccessToken(accessToken);
 
-        // Set a timeout to refresh the token before it expires
+
         setTimeout(async () => {
             await initSpotifyApi();
-        }, (data.body['expires_in'] - 60) * 1000); // Refresh the token 60 seconds before expiration
+        }, (data.body['expires_in'] - 60) * 1000);
     } catch (error) {
         console.error('Failed to retrieve access token from Spotify API:', error);
     }
