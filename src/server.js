@@ -19,6 +19,7 @@ import songCardRouter from "./routes/songCardRouter.js";
 import discoveryFeedRouter from "./routes/discoveryFeedRouter.js";
 import createHttpError from "http-errors";
 import spotifyRouter from "./routes/spotifyRouter.js";
+import postRouter from "./routes/postRouter.js";
 
 
 
@@ -53,6 +54,7 @@ server.use("/users", usersRouter)
 server.use("/songs", songCardRouter)
 server.use("/feed", discoveryFeedRouter)
 server.use("/api", spotifyRouter)
+server.use("/post", postRouter)
 
 /*---------- ERRORHANDLERS ----------*/
 server.use(badRequestHandler);

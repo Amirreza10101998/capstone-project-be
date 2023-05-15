@@ -21,7 +21,6 @@ const associateModels = () => {
     SongCard.belongsToMany(Playlist, { through: 'playlist_song_cards', foreignKey: 'song_id' });
 
     Post.belongsTo(User, { foreignKey: 'user_id' });
-    Post.belongsTo(Playlist, { foreignKey: 'playlist_id' });
 };
 
 export default associateModels;

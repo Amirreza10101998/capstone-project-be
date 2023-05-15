@@ -13,7 +13,7 @@ export const pgConnect = async () => {
     try {
         await sequelize.authenticate();
         console.log(`Successfully connected to Postgres!`);
-        await sequelize.sync({ alter: true });
+        await sequelize.sync({ force: true });
         console.log(`All models syncronized!`);
     } catch (error) {
         console.error(error);

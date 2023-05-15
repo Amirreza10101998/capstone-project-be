@@ -23,14 +23,6 @@ const Post = sequelize.define('Post', {
             key: 'id',
         },
     },
-    playlist_id: {
-        type: DataTypes.UUID,
-        allowNull: false,
-        references: {
-            model: 'Playlists',
-            key: 'id',
-        },
-    },
 }, {
     timestamps: true,
 });
