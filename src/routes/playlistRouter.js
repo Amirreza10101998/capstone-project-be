@@ -27,6 +27,6 @@ playlistRouter.put('/:id', jwtAuth, updatePlaylist);
 playlistRouter.delete('/:id', jwtAuth, deletePlaylist);
 
 //ADD SONG TO PLAYLIST
-playlistRouter.post(":id/addSong", jwtAuth, addSongToPlaylist);
+playlistRouter.post("/:id/addSong", jwtAuth, addSongToPlaylist);
 
 export default playlistRouter;

@@ -22,8 +22,8 @@ export const getPlaylist = async (req, res) => {
     try {
         const playlist = await Playlist.findByPk(req.params.id, {
             include: [
-                { model: User, attributes: ['id', 'username', 'avatar'] }, // include User
-                { model: SongCard, through: 'playlist_song_cards', as: 'songs' }, // include SongCards
+                { model: User, attributes: ['id', 'username', 'avatar'] },
+                { model: SongCard, through: 'playlist_song_cards', as: 'SongCards' },
             ],
         });
 
@@ -44,7 +44,7 @@ export const getPlaylists = async (req, res) => {
             where: { user_id: req.user.id },
             include: [
                 { model: User, attributes: ['id', 'username', 'avatar'] },
-                { model: SongCard, through: 'playlist_song_cards', as: 'songs' },
+                { model: SongCard, through: 'playlist_song_cards', as: 'SongCards' },
             ],
         });
         res.send(playlists);
@@ -99,7 +99,7 @@ export const deletePlaylist = async (req, res) => {
 // ADD SONG TO PLAYLIST
 export const addSongToPlaylist = async (req, res) => {
     try {
-        const playlist = await Playlist.findByPk(req.params.playlistId);
+        const playlist = await Playlist.findByPk(req.params.id);
         const songCard = await SongCard.findByPk(req.body.songCardId);
 
         if (playlist && songCard) {
