@@ -12,7 +12,7 @@ import {
 
 import { googleStrategy } from "./middlewares/authMiddleware.js";
 import passport from "passport";
-import sequelize from './config/database.js';
+import sequelize, { pgConnect } from './config/database.js';
 import associateModels from './models/associateModels.js';
 import usersRouter from "./routes/userRouter.js";
 import songCardRouter from "./routes/songCardRouter.js";
@@ -20,6 +20,7 @@ import discoveryFeedRouter from "./routes/discoveryFeedRouter.js";
 import createHttpError from "http-errors";
 import spotifyRouter from "./routes/spotifyRouter.js";
 import postRouter from "./routes/postRouter.js";
+import playlistRouter from "./routes/playlistRouter.js";
 
 
 
@@ -55,6 +56,7 @@ server.use("/songs", songCardRouter)
 server.use("/feed", discoveryFeedRouter)
 server.use("/api", spotifyRouter)
 server.use("/post", postRouter)
+server.use("/playlist", playlistRouter)
 
 /*---------- ERRORHANDLERS ----------*/
 server.use(badRequestHandler);
@@ -67,7 +69,7 @@ server.use(genericErrorHandler);
 associateModels();
 
 
-sequelize.sync()
+pgConnect()
     .then(() => {
         server.listen(config.server.port, () => {
             console.table(listEndpoints(server));

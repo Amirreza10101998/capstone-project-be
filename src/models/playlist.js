@@ -22,10 +22,13 @@ const Playlist = sequelize.define('Playlist', {
     description: {
         type: DataTypes.STRING,
     },
-    is_public: {
-        type: DataTypes.BOOLEAN,
-        allowNull: false,
-        defaultValue: false,
+    SongCardId: {
+        type: DataTypes.UUID,
+        allowNull: true,
+        references: {
+            model: 'SongCards',
+            key: 'id',
+        },
     },
 }, {
     timestamps: true,

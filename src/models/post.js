@@ -9,7 +9,6 @@ const Post = sequelize.define('Post', {
     },
     title: {
         type: DataTypes.STRING,
-        allowNull: false,
     },
     content: {
         type: DataTypes.TEXT,
@@ -20,6 +19,14 @@ const Post = sequelize.define('Post', {
         allowNull: false,
         references: {
             model: 'Users',
+            key: 'id',
+        },
+    },
+    SongCardId: {
+        type: DataTypes.UUID,
+        allowNull: true,
+        references: {
+            model: 'SongCards',
             key: 'id',
         },
     },
