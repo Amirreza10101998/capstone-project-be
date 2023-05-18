@@ -39,6 +39,7 @@ const User = sequelize.define('User', {
     googleId: {
         type: DataTypes.STRING,
     },
+
 }, {
     timestamps: true,
 });
