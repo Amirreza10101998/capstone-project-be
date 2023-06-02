@@ -17,7 +17,6 @@ const initSpotifyApi = async () => {
         console.log(accessToken)
         spotifyApi.setAccessToken(accessToken);
 
-
         setTimeout(async () => {
             await initSpotifyApi();
         }, (data.body['expires_in'] - 60) * 1000);
@@ -35,7 +34,7 @@ const exchangeCodeForToken = async (code) => {
         spotifyApi.setAccessToken(accessToken);
         spotifyApi.setRefreshToken(refreshToken);
 
-        return { accessToken };
+        return { accessToken, refreshToken };
     } catch (error) {
         console.error('Error exchanging code for access token:', error);
         throw new Error('Failed to exchange code for access token');
@@ -52,5 +51,19 @@ const getAccessToken = (req, res) => {
     }
 };
 
+const refreshAccessToken = async () => {
+    try {
+        const data = await spotifyApi.refreshAccessToken();
+        const newAccessToken = data.body['access_token'];
+
+        spotifyApi.setAccessToken(newAccessToken);
+
+        console.log('Successfully refreshed access token');
+        return { access_token: newAccessToken };
+    } catch (error) {
+        console.error('Failed to refresh access token:', error);
+    }
+};
+
 export default spotifyApi;
-export { initSpotifyApi, exchangeCodeForToken, getAccessToken };
+export { initSpotifyApi, exchangeCodeForToken, getAccessToken, refreshAccessToken };
