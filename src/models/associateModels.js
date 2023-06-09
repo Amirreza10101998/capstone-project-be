@@ -1,10 +1,15 @@
 import User from './user.js';
 import Playlist from './playlist.js';
 import SongCard from './songCard.js';
+import Follow from './follow.js';
 import UserSongPreferences from './userSongPreferences.js';
 import Post from './post.js';
 
 const associateModels = () => {
+
+    User.belongsToMany(User, { as: 'Followers', through: Follow, foreignKey: 'followeeId', otherKey: 'followerId' });
+    User.belongsToMany(User, { as: 'Following', through: Follow, foreignKey: 'followerId', otherKey: 'followeeId' });
+
     User.hasMany(Playlist, { foreignKey: 'user_id' });
     Playlist.belongsTo(User, { foreignKey: 'user_id' });
 
@@ -21,8 +26,8 @@ const associateModels = () => {
     SongCard.belongsToMany(Playlist, { through: 'playlist_song_cards', foreignKey: 'song_id' });
 
     Post.belongsTo(User, { foreignKey: 'user_id' });
-    Post.belongsTo(SongCard, { foreignKey: 'SongCardId' }); // New association
-    SongCard.hasMany(Post, { foreignKey: 'SongCardId' }); // New association
+    Post.belongsTo(SongCard, { foreignKey: 'SongCardId' });
+    SongCard.hasMany(Post, { foreignKey: 'SongCardId' });
 };
 
 export default associateModels;

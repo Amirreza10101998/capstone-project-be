@@ -21,7 +21,7 @@ import createHttpError from "http-errors";
 import spotifyRouter from "./routes/spotifyRouter.js";
 import postRouter from "./routes/postRouter.js";
 import playlistRouter from "./routes/playlistRouter.js";
-
+import followRouter from "./routes/followRouter.js";
 
 
 const server = express();
@@ -54,7 +54,7 @@ passport.use("google", googleStrategy);
 server.use("/users", usersRouter)
 server.use("/songs", songCardRouter)
 server.use("/feed", discoveryFeedRouter)
-server.use("/api", spotifyRouter)
+server.use("/api", spotifyRouter, followRouter)
 server.use("/post", postRouter)
 server.use("/playlist", playlistRouter)
 
