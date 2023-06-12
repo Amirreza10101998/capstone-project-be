@@ -1,6 +1,7 @@
 import { DataTypes } from 'sequelize';
 import sequelize from '../config/database.js';
 import bcrypt from 'bcrypt';
+import Post from '../models/post.js'
 
 const User = sequelize.define('User', {
     id: {
@@ -78,6 +79,14 @@ User.checkCredentials = async function (email, plainPw) {
     } else {
         return null;
     }
+};
+
+User.prototype.getPostCount = async function () {
+    return await Post.count({
+        where: {
+            user_id: this.id,
+        },
+    });
 };
 
 export default User;

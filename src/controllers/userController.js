@@ -48,7 +48,8 @@ export const getMe = async (req, res, next) => {
         if (!user) {
             return res.status(404).send({ message: "User not found" });
         }
-        res.status(200).send(user);
+        const postCount = await user.getPostCount();
+        res.status(200).send({ ...user.toJSON(), postCount });
     } catch (error) {
         next(error);
     }
@@ -94,7 +95,8 @@ export const getUserById = async (req, res, next) => {
     try {
         const user = await UsersModel.findByPk(req.params.userId);
         if (user) {
-            res.send(user);
+            const postCount = await user.getPostCount();
+            res.send({ ...user.toJSON(), postCount });
         } else {
             next(createError(404, `User with id ${req.params.userId} not found`));
         }
