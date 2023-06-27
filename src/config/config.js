@@ -25,10 +25,6 @@ const config = {
         client_secret: process.env.SPOTIFY_CLIENT_SECRET,
         redirectUri: process.env.SPOTIFY_REDIRECT_URI,
     },
-    deezer: {
-        deezer_app_id: process.env.DEEZER_APP_ID,
-        deezer_app_secret: process.env.DEEZER_APP_SECRET,
-    },
 };
 
 export default config;
